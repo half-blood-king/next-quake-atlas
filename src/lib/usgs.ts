@@ -1,7 +1,7 @@
 import 'server-only';
 import { cache } from 'react';
 
-export const PERIODS = { hour: 'Past hour', day: 'Past day', week: 'Past 7 days' } as const;
+export const PERIODS = { hour: 'Past hour', day: 'Past day', week: 'Past 7 days', month: 'Past 30 days' } as const;
 export const LEVELS = { all: 'All', '1.0': 'M1+', '2.5': 'M2.5+', '4.5': 'M4.5+' } as const;
 export type Period = keyof typeof PERIODS;
 export type Level = keyof typeof LEVELS;
@@ -66,6 +66,16 @@ export function parsePeriod(v: string | undefined): Period {
 
 export function parseLevel(v: string | undefined): Level {
   return v && v in LEVELS ? (v as Level) : '2.5';
+}
+
+/** The 30-day "all" and "M1+" feeds are 10+ MB, so the month view starts at M2.5. */
+export function levelsFor(period: Period): Level[] {
+  const all = Object.keys(LEVELS) as Level[];
+  return period === 'month' ? all.filter((l) => l === '2.5' || l === '4.5') : all;
+}
+
+export function fitLevel(period: Period, level: Level): Level {
+  return levelsFor(period).includes(level) ? level : '2.5';
 }
 
 /**

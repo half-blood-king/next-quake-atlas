@@ -4,16 +4,16 @@ import { DepthScatter, MagnitudeHistogram, Timeline } from '@/components/Charts'
 import { RelativeTime } from '@/components/RelativeTime';
 import { WorldMap } from '@/components/WorldMap';
 import { DEPTH_BANDS, depthColor, fmtMag } from '@/lib/scale';
-import { getFeed, LEVELS, parseLevel, parsePeriod, PERIODS, type Level, type Period } from '@/lib/usgs';
+import { fitLevel, getFeed, LEVELS, levelsFor, parseLevel, parsePeriod, PERIODS, type Level, type Period } from '@/lib/usgs';
 
 type Search = Promise<{ period?: string; level?: string }>;
 
-const HOURS: Record<Period, number> = { hour: 1, day: 24, week: 168 };
+const HOURS: Record<Period, number> = { hour: 1, day: 24, week: 168, month: 720 };
 
 export default async function Home({ searchParams }: { searchParams: Search }) {
   const sp = await searchParams;
   const period = parsePeriod(sp.period);
-  const level = parseLevel(sp.level);
+  const level = fitLevel(period, parseLevel(sp.level));
   const now = Date.now();
 
   return (
@@ -28,17 +28,23 @@ export default async function Home({ searchParams }: { searchParams: Search }) {
         <nav className="filters">
           <div className="seg">
             {(Object.keys(PERIODS) as Period[]).map((p) => (
-              <Link key={p} href={`/?period=${p}&level=${level}`} className={p === period ? 'on' : ''} scroll={false}>
+              <Link key={p} href={`/?period=${p}&level=${fitLevel(p, level)}`} className={p === period ? 'on' : ''} scroll={false}>
                 {PERIODS[p]}
               </Link>
             ))}
           </div>
           <div className="seg">
-            {(Object.keys(LEVELS) as Level[]).map((l) => (
-              <Link key={l} href={`/?period=${period}&level=${l}`} className={l === level ? 'on' : ''} scroll={false}>
-                {LEVELS[l]}
-              </Link>
-            ))}
+            {(Object.keys(LEVELS) as Level[]).map((l) =>
+              levelsFor(period).includes(l) ? (
+                <Link key={l} href={`/?period=${period}&level=${l}`} className={l === level ? 'on' : ''} scroll={false}>
+                  {LEVELS[l]}
+                </Link>
+              ) : (
+                <span key={l} className="off" title="Too many events for a 30-day window">
+                  {LEVELS[l]}
+                </span>
+              ),
+            )}
           </div>
         </nav>
       </header>

@@ -83,6 +83,13 @@ h1 span {
   font-size: 13px;
 }
 
+.seg span.off {
+  color: #8693b855;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: not-allowed;
+}
+
 .seg a.on {
   background: var(--line);
   color: var(--text);

@@ -20,7 +20,7 @@ A live map of global earthquake activity. Data comes from the USGS real-time fee
 ## Features
 
 - Equal Earth world map with quakes sized by magnitude, colored by depth, and pulsing if they happened in the last 3 hours
-- Filter by window (hour / day / week) and minimum magnitude, all URL-driven
+- Filter by window (hour / day / week / 30 days) and minimum magnitude, all URL-driven. The 30-day view starts at M2.5 to keep the payload small
 - Magnitude histogram stacked by depth band, depth-vs-magnitude cross-section, activity timeline
 - Detail page with an orthographic globe rotated to face the epicentre, distance rings, and nearby events from the past week (haversine distance)
 

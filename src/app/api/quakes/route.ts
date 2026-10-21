@@ -1,13 +1,13 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { getFeed, parseLevel, parsePeriod } from '@/lib/usgs';
+import { fitLevel, getFeed, parseLevel, parsePeriod } from '@/lib/usgs';
 
 /**
- * GET /api/quakes?period=day&level=4.5
+ * GET /api/quakes?period=day&level=4.5 (period: hour | day | week | month)
  * A compact JSON view of the feed for other clients, with CDN cache headers.
  */
 export async function GET(req: NextRequest) {
   const period = parsePeriod(req.nextUrl.searchParams.get('period') ?? undefined);
-  const level = parseLevel(req.nextUrl.searchParams.get('level') ?? undefined);
+  const level = fitLevel(period, parseLevel(req.nextUrl.searchParams.get('level') ?? undefined));
   try {
     const { quakes, generated } = await getFeed(period, level);
     return NextResponse.json(

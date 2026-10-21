@@ -104,11 +104,11 @@ export function DepthScatter({ quakes }: { quakes: Quake[] }) {
   );
 }
 
-/** 24 one-hour buckets (or 7 days) showing how activity is spread over the window. */
+/** Evenly sized buckets (5 min, 1 h, 6 h or 1 day) showing how activity is spread over the window. */
 export function Timeline({ quakes, now, hours }: { quakes: Quake[]; now: number; hours: number }) {
   const W = 940;
   const H = 70;
-  const buckets = hours <= 1 ? 12 : hours <= 24 ? 24 : 28;
+  const buckets = hours <= 1 ? 12 : hours <= 24 ? 24 : hours <= 168 ? 28 : 30;
   const span = (hours * 3600_000) / buckets;
   const counts = new Array(buckets).fill(0);
   for (const q of quakes) {
